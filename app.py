@@ -1,7 +1,7 @@
 import streamlit as st
 import streamlit.components.v1 as components
 
-# Configure Streamlit Page
+# Configure Streamlit Page to take full width
 st.set_page_config(
     page_title="AuraAI — AI Career & Skills Navigator",
     page_icon="✨",
@@ -9,18 +9,20 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# Hide default Streamlit header and footer for a clean SaaS look
+# Hide Streamlit default chrome, padding, and make background match dark theme
 hide_streamlit_style = """
     <style>
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
     .stApp { background-color: #0b0f19; color: #f8fafc; }
+    .block-container { padding-top: 0rem !important; padding-bottom: 0rem !important; padding-left: 0rem !important; padding-right: 0rem !important; max-width: 100% !important; }
+    iframe { width: 100% !important; border: none !important; }
     </style>
 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
-# Full HTML/CSS/JS Frontend Prototype matching your Dashboard & Landing Page
+# Full HTML/CSS/JS Frontend Prototype with responsive flex/grid scaling
 aura_app_html = """
 <!DOCTYPE html>
 <html lang="en" class="dark">
@@ -32,7 +34,7 @@ aura_app_html = """
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0b0f19; color: #f8fafc; overflow-x: hidden; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0b0f19; color: #f8fafc; margin: 0; padding: 0; }
         .glass-panel { background: rgba(17, 24, 39, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
         .gradient-text { background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .glow-btn { box-shadow: 0 0 25px rgba(59, 130, 246, 0.4); transition: all 0.3s ease; }
@@ -63,15 +65,14 @@ aura_app_html = """
         </nav>
 
         <div class="flex items-center space-x-4">
-            <button onclick="toggleModal('login')" class="px-4 py-2 text-sm font-semibold text-slate-200 hover:text-white transition">Sign In</button>
-            <button onclick="toggleModal('register')" class="px-5 py-2 text-sm font-semibold rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white glow-btn">Get Started</button>
+            <button onclick="switchView('dashboard')" class="px-5 py-2 text-sm font-semibold rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white glow-btn">Launch App</button>
         </div>
     </header>
 
     <!-- Main Dynamic Container -->
-    <main class="flex-grow p-6">
+    <main class="flex-grow p-4 md:p-6 max-w-[1700px] mx-auto w-full">
         <!-- Landing View -->
-        <div id="view-landing" class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center py-12">
+        <div id="view-landing" class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center py-12">
             <div>
                 <span class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/10 text-cyan-400 border border-cyan-500/20">
                     <i class="fa-solid fa-sparkles mr-1"></i> Powered by CrewAI & Groq (GPT-OSS-120B)
@@ -121,10 +122,10 @@ aura_app_html = """
             </div>
         </div>
 
-        <!-- Dashboard View (Embeddable Full Replica) -->
-        <div id="view-dashboard" class="hidden max-w-[1600px] mx-auto grid grid-cols-1 xl:grid-cols-12 gap-6">
+        <!-- Dashboard View (Exact Replica matching reference) -->
+        <div id="view-dashboard" class="hidden grid-cols-1 xl:grid-cols-12 gap-6 py-4">
             <!-- Sidebar -->
-            <div class="xl:col-span-3 glass-panel p-5 rounded-2xl flex flex-col justify-between h-[85vh]">
+            <div class="xl:col-span-3 glass-panel p-5 rounded-2xl flex flex-col justify-between h-[80vh]">
                 <div class="space-y-6">
                     <div class="space-y-1">
                         <button class="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-blue-600/20 text-cyan-400 font-semibold border border-blue-500/30">
@@ -161,7 +162,7 @@ aura_app_html = """
             </div>
 
             <!-- Main Chat Interface -->
-            <div class="xl:col-span-6 glass-panel p-6 rounded-2xl flex flex-col h-[85vh] justify-between">
+            <div class="xl:col-span-6 glass-panel p-6 rounded-2xl flex flex-col h-[80vh] justify-between">
                 <div class="flex items-center justify-between pb-4 border-b border-slate-800">
                     <div>
                         <h3 class="font-bold text-white">Chat with Aura</h3>
@@ -213,7 +214,7 @@ aura_app_html = """
             </div>
 
             <!-- Right Assistant Panel -->
-            <div class="xl:col-span-3 glass-panel p-5 rounded-2xl flex flex-col justify-between h-[85vh]">
+            <div class="xl:col-span-3 glass-panel p-5 rounded-2xl flex flex-col justify-between h-[80vh]">
                 <div class="space-y-6 text-center">
                     <img src="https://raw.githubusercontent.com/Tajdar-Khalil/Goat-/main/aura_avatar.jpg" class="w-24 h-24 rounded-full object-cover mx-auto border-2 border-cyan-400 shadow-xl">
                     <div>
@@ -294,23 +295,35 @@ aura_app_html = """
     </main>
 
     <!-- Global Footer -->
-    <footer class="glass-panel border-t border-slate-800 py-6 text-center text-xs text-slate-400">
+    <footer class="glass-panel border-t border-slate-800 py-6 text-center text-xs text-slate-400 mt-auto">
         © 2026 AuraAI — AI Career Skills Navigator. All rights reserved. Designed & developed by Tajdar Khalil.
     </footer>
 
-    <!-- JavaScript View Switcher -->
+    <!-- JavaScript View Switcher & Dynamic Height Adjuster -->
     <script>
         function switchView(viewName) {
             ['landing', 'dashboard', 'about', 'contact'].forEach(v => {
-                document.getElementById('view-' + v).classList.add('hidden');
+                const el = document.getElementById('view-' + v);
+                if (el) {
+                    el.classList.add('hidden');
+                    el.classList.remove('grid');
+                }
             });
-            document.getElementById('view-' + viewName).classList.remove('hidden');
+            const target = document.getElementById('view-' + viewName);
+            if (target) {
+                target.classList.remove('hidden');
+                if(viewName === 'dashboard') {
+                    target.classList.add('grid');
+                }
+            }
             window.scrollTo(0, 0);
         }
+        // Default to dashboard view on load if desired, or landing
+        switchView('dashboard');
     </script>
 </body>
 </html>
 """
 
-# Render the application inside Streamlit
-components.html(aura_app_html, height=920, scrolling=True)
+# Render full screen component without fixed scroll bounds
+components.html(aura_app_html, height=880, scrolling=False)
